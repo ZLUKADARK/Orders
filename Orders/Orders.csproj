@@ -6,8 +6,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="ViewModels\Orders\" />
-    <Folder Include="ViewModels\Provider\" />
   </ItemGroup>
 
   <ItemGroup>

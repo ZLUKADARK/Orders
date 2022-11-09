@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Orders.ViewModels.OrderItem
+﻿namespace Orders.ViewModels.OrderItem
 {
-    public class OrdersViewModel
+    public class OrderItemViewModel
     {
         public int Id { get; set; }
-        public string Number { get; set; }
-        public DateTime Date { get; set; }
-        public int ProviderId { get; set; }
+        public string Name { get; set; }
+        public decimal Quantity { get; set; }
+        public string Unit { get; set; }
+        public int OrderId { get; set; }
     }
 }
