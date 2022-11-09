@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Orders.Migrations
 {
-    public partial class Orders : Migration
+    public partial class UNIQUEINDEX : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,7 +26,7 @@ namespace Orders.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Number = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime2(7)", nullable: false),
                     ProviderId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -62,6 +62,13 @@ namespace Orders.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_Number_ProviderId",
+                table: "Order",
+                columns: new[] { "Number", "ProviderId" },
+                unique: true,
+                filter: "[Number] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_ProviderId",

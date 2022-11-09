@@ -10,8 +10,8 @@ using Orders.Data;
 namespace Orders.Migrations
 {
     [DbContext(typeof(OrdersDBContext))]
-    [Migration("20221109112918_Orders")]
-    partial class Orders
+    [Migration("20221109155337_UNIQUEINDEX2")]
+    partial class UNIQUEINDEX2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,7 +32,7 @@ namespace Orders.Migrations
                         .HasColumnType("datetime2(7)");
 
                     b.Property<string>("Number")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ProviderId")
                         .HasColumnType("int");
@@ -40,6 +40,10 @@ namespace Orders.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProviderId");
+
+                    b.HasIndex("Number", "ProviderId")
+                        .IsUnique()
+                        .HasFilter("[Number] IS NOT NULL");
 
                     b.ToTable("Order");
                 });
@@ -83,6 +87,38 @@ namespace Orders.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Provider");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Ozon"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "AliExpress"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Amazon"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Ebay"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Lite-Computer Store"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Cheap Wholesales"
+                        });
                 });
 
             modelBuilder.Entity("Orders.Data.Models.Order", b =>

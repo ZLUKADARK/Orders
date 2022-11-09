@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orders.Data;
+using Orders.Services.OrderServices;
 
 namespace Orders
 {
@@ -20,6 +21,7 @@ namespace Orders
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IOrdersServices, OrdersServices>();
             services.AddControllersWithViews();
             services.AddDbContext<OrdersDBContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("OrdersDBContext")));
