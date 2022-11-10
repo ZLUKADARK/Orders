@@ -11,8 +11,8 @@ namespace Orders.Services.OrderServices
         public Task<OrderItemViewModel> CreateOrderItemToOrder(OrderItemViewModel orderItem);
         public Task<OrderItemViewModel> AddOrderItemToOrder(OrderItemViewModel orderItem);
         public Task<IEnumerable<OrderTableViewModel>> GetOrders();
-        public Task<OrderTableViewModel> GetOrders(int id);
-        public Task<bool> UpdateOrder(OrderUpdateViewModel orders);
-        public Task<bool> UpdateOrderItem(OrderItemUpdateViewModel orderItem);
+        public Task<OrderTableViewModel> GetOrder(int id);
+        public Task<bool> UpdateOrder(int id, OrderUpdateViewModel orders);
+        public Task<bool> UpdateOrderItem(int id, OrderItemUpdateViewModel orderItem);
     }
 }
