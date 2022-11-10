@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Orders.Data.Models
@@ -12,5 +12,6 @@ namespace Orders.Data.Models
         public DateTime Date { get; set; }
         public int ProviderId { get; set; }
         public Provider Provider { get; set; }
+        public List<OrderItem> OrderItem { get; set; }
     }
 }

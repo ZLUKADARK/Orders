@@ -21,8 +21,8 @@ namespace Orders
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IOrdersServices, OrdersServices>();
             services.AddControllersWithViews();
+            services.AddTransient<IOrderServices, OrderServices>();
             services.AddDbContext<OrdersDBContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("OrdersDBContext")));
         }

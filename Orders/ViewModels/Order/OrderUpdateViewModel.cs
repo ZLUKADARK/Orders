@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orders.ViewModels.Orders
 {
-    public class OrdersViewModel
+    public class OrderUpdateViewModel
     {
         public int Id { get; set; }
         public string Number { get; set; }
