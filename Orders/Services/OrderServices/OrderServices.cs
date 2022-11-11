@@ -15,12 +15,7 @@ namespace Orders.Services.OrderServices
         public OrderServices(OrdersDBContext context)
         {
             _context = context;
-        }
-
-        public async Task<OrderItemViewModel> AddOrderItemToOrder(OrderItemViewModel orderItem)
-        {
-            throw new System.NotImplementedException();
-        }
+        } 
 
         public async Task<OrderViewModel> CreateOrder(OrderViewModel orders)
         {
@@ -44,11 +39,34 @@ namespace Orders.Services.OrderServices
             return orderItem;
         }
 
-        public async Task<IEnumerable<OrderTableViewModel>> GetOrders()
+        public async Task<IEnumerable<OrderViewModel>> GetOrders()
+        {
+            var result = from f in await _context.Order.AsNoTracking().ToListAsync()
+                         select new OrderViewModel { Id = f.Id, Date = f.Date, Number = f.Number, ProviderId = f.ProviderId };
+            return result;
+        }
+
+        public async Task<OrderViewModel> GetOrder(int id)
+        {
+            var result = await _context.Order.FindAsync(id);
+                          
+            return new OrderViewModel { Id = result.Id, Date = result.Date, Number = result.Number, ProviderId = result.ProviderId }; 
+        }
+
+        public async Task<OrderItemViewModel> GetOrderItem(int id)
+        {
+            var result = await _context.OrderItems.FindAsync(id);
+
+            return new OrderItemViewModel { Id = result.Id, Name = result.Name, OrderId = result.OrderId, Quantity = result.Quantity, Unit = result.Unit };
+        }
+
+        public async Task<IEnumerable<OrderTableViewModel>> GetOrdersTable()
         {
             var result = from f in _context.OrderItems.Include(o => o.Order).ThenInclude(p => p.Provider).AsNoTracking()
                          select new OrderTableViewModel 
                          { 
+                             OrderItemId = f.Id,
+                             OrderId = f.OrderId,
                              Name = f.Name, 
                              Quantity = f.Quantity, 
                              Unit = f.Unit, 
@@ -60,11 +78,13 @@ namespace Orders.Services.OrderServices
             return await result.ToListAsync();
         }
 
-        public async Task<OrderTableViewModel> GetOrder(int id)
+        public async Task<OrderTableViewModel> GetOrderTable(int id)
         {
             var result = from f in _context.OrderItems.Include(o => o.Order).ThenInclude(p => p.Provider).Where(o => o.Order.Id == id).AsNoTracking()
                          select new OrderTableViewModel
                          {
+                             OrderItemId = f.Id,
+                             OrderId = f.OrderId,
                              Name = f.Name,
                              Quantity = f.Quantity,
                              Unit = f.Unit,
@@ -81,7 +101,7 @@ namespace Orders.Services.OrderServices
             if (orders.Id != id)
                 return false;
 
-            var result = new Order() { Id = orders.Id, Date = orders.Date, ProviderId = orders.ProviderId, Number =orders.Number };
+            var result = new Order() { Id = orders.Id, Date = orders.Date, ProviderId = orders.ProviderId, Number = orders.Number };
 
             _context.Entry(result).State = EntityState.Modified;
 

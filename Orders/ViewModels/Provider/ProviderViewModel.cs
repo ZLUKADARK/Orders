@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Orders.ViewModels.Provider
+﻿namespace Orders.ViewModels.Provider
 {
     public class ProviderViewModel
     {
