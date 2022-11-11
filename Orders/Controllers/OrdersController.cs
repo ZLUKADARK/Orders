@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Orders.Services.OrderServices;
 using Orders.ViewModels.OrderItem;
 using Orders.ViewModels.Orders;
@@ -15,7 +16,7 @@ namespace Orders.Controllers
             _orderServices = orderServices;
         }
         // GET: OrdersController
-        public async Task<ActionResult> IndexAsync()
+        public async Task<ActionResult> Index()
         {
             return View(await _orderServices.GetOrdersTable());
         }
@@ -27,22 +28,35 @@ namespace Orders.Controllers
         }
 
         // GET: OrdersController/Create
-        public ActionResult Create()
+        public async Task<ActionResult> CreateOrder()
         {
+            var result = await _orderServices.GetProviders();
+            ViewBag.Providers = new SelectList(result, "Id", "Name");
+            return View();
+        }
+
+        public async Task<ActionResult> CreateOrderItem()
+        {
+            var result = await _orderServices.GetOrders();
+            ViewBag.Orders = new SelectList(result, "Id", "Number");
             return View();
         }
 
         // POST: OrdersController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateOrderAsync(OrderViewModel order)
+        public async Task<ActionResult> CreateOrder([Bind("Number,Date,ProviderId")] OrderViewModel order)
         {
             try
             {
                 if (order == null)
                     return BadRequest();
-                await _orderServices.CreateOrder(order);
-                return RedirectToAction(nameof(CreateOrderItemAsync));
+                
+                var result = await _orderServices.CreateOrder(order);
+                if (result == null)
+                    return BadRequest();
+
+                return RedirectToAction(nameof(CreateOrderItem));
             }
             catch
             {
@@ -52,12 +66,18 @@ namespace Orders.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateOrderItemAsync(OrderItemViewModel orderItem)
+        public async Task<ActionResult> CreateOrderItem([Bind("Name,Quantity,Unit,OrderId")] OrderItemViewModel orderItem)
         {
             try
             {
-                await _orderServices.CreateOrderItemToOrder(orderItem);
-                return RedirectToAction(nameof(IndexAsync));
+                if (orderItem == null)
+                    return BadRequest();
+
+                var result = await _orderServices.CreateOrderItemToOrder(orderItem); 
+                if (result == null)
+                    return BadRequest();
+                
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
@@ -78,7 +98,7 @@ namespace Orders.Controllers
         {
             try
             {
-                return RedirectToAction(nameof(IndexAsync));
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
@@ -99,7 +119,7 @@ namespace Orders.Controllers
         {
             try
             {
-                return RedirectToAction(nameof(IndexAsync));
+                return RedirectToAction(nameof(Index));
             }
             catch
             {

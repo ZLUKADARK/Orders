@@ -3,6 +3,7 @@ using Orders.Data;
 using Orders.Data.Models;
 using Orders.ViewModels.OrderItem;
 using Orders.ViewModels.Orders;
+using Orders.ViewModels.Provider;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Orders.Services.OrderServices
 
         public async Task<OrderViewModel> CreateOrder(OrderViewModel orders)
         {
-            if (OrdernNameExists(orders.Number))
+            if (OrderItemsNumberExists(orders.Number))
                 return null;
 
             var result = new Order() { Date = orders.Date, Number = orders.Number, ProviderId = orders.ProviderId };
@@ -30,7 +31,7 @@ namespace Orders.Services.OrderServices
 
         public async Task<OrderItemViewModel> CreateOrderItemToOrder(OrderItemViewModel orderItem)
         {
-            if (OrderItemsNumberExists(orderItem.Name))
+            if (OrdernNameExists(orderItem.Name))
                 return null;
 
             var result = new OrderItem() { Name = orderItem.Name, Quantity = orderItem.Quantity, OrderId = orderItem.OrderId, Unit = orderItem.Unit };
@@ -58,6 +59,13 @@ namespace Orders.Services.OrderServices
             var result = await _context.OrderItems.FindAsync(id);
 
             return new OrderItemViewModel { Id = result.Id, Name = result.Name, OrderId = result.OrderId, Quantity = result.Quantity, Unit = result.Unit };
+        }
+
+        public async Task<IEnumerable<ProviderViewModel>> GetProviders()
+        {
+            var result = await _context.Provider
+                .Select(p => new ProviderViewModel { Id = p.Id, Name = p.Name }).ToListAsync();
+            return result;
         }
 
         public async Task<IEnumerable<OrderTableViewModel>> GetOrdersTable()

@@ -1,5 +1,6 @@
 ﻿using Orders.ViewModels.OrderItem;
 using Orders.ViewModels.Orders;
+using Orders.ViewModels.Provider;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace Orders.Services.OrderServices
         public Task<IEnumerable<OrderTableViewModel>> GetOrdersTable();
         public Task<OrderTableViewModel> GetOrderTable(int id);
         public Task<IEnumerable<OrderViewModel>> GetOrders();
+        public Task<IEnumerable<ProviderViewModel>> GetProviders();
         public Task<bool> UpdateOrder(int id, OrderUpdateViewModel orders);
         public Task<bool> UpdateOrderItem(int id, OrderItemUpdateViewModel orderItem);
     }
