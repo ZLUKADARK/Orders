@@ -25,7 +25,15 @@ namespace Orders.Services.OrderServices
 
             var result = new Order() { Date = orders.Date, Number = orders.Number, ProviderId = orders.ProviderId };
             _context.Order.Add(result);
-            await _context.SaveChangesAsync();            
+            try
+            {
+                await _context.SaveChangesAsync();   
+            }
+            catch (DbUpdateException)
+            {
+                return null;
+            }
+            orders.Id = result.Id;
             return orders;
         }
 
@@ -47,8 +55,10 @@ namespace Orders.Services.OrderServices
             return result;
         }
 
-        public async Task<OrderViewModel> GetOrder(int id)
+        public async Task<OrderViewModel> GetOrder(int? id)
         {
+            if (id == null)
+                return null;
             var result = await _context.Order.FindAsync(id);
                           
             return new OrderViewModel { Id = result.Id, Date = result.Date, Number = result.Number, ProviderId = result.ProviderId }; 
@@ -148,6 +158,28 @@ namespace Orders.Services.OrderServices
                 else
                     throw;
             }
+        }
+
+        public async Task<bool> DeleteOrderItem(int id)
+        {
+            var orderItem = await _context.OrderItems.FindAsync(id);
+            if (orderItem == null)
+                return false;
+
+            _context.OrderItems.Remove(orderItem);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteOrder(int id)
+        {
+            var order = await _context.Order.FindAsync(id);
+            if (order == null)
+                return false;
+
+            _context.Order.Remove(order);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         private bool OrdernNameExists(string name)

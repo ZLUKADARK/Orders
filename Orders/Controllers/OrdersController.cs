@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Orders.Services.OrderServices;
 using Orders.ViewModels.OrderItem;
 using Orders.ViewModels.Orders;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+
 
 namespace Orders.Controllers
 {
@@ -35,7 +37,7 @@ namespace Orders.Controllers
             return View();
         }
 
-        public async Task<ActionResult> CreateOrderItem()
+        public async Task<ActionResult> CreateOrderItem(int? orderid)
         {
             var result = await _orderServices.GetOrders();
             ViewBag.Orders = new SelectList(result, "Id", "Number");
@@ -56,7 +58,7 @@ namespace Orders.Controllers
                 if (result == null)
                     return BadRequest();
 
-                return RedirectToAction(nameof(CreateOrderItem));
+                return RedirectToAction("CreateOrderItem", new { orderid = result.Id});
             }
             catch
             {
@@ -78,6 +80,27 @@ namespace Orders.Controllers
                     return BadRequest();
                 
                 return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CreateOrderItemAndAdd([Bind("Name,Quantity,Unit,OrderId")] OrderItemViewModel orderItem)
+        {
+            try
+            {
+                if (orderItem == null)
+                    return BadRequest();
+
+                var result = await _orderServices.CreateOrderItemToOrder(orderItem);
+                if (result == null)
+                    return BadRequest();
+
+                return RedirectToAction("CreateOrderItem", new { orderid = result.Id });
             }
             catch
             {
@@ -107,9 +130,20 @@ namespace Orders.Controllers
         }
 
         // GET: OrdersController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> DeleteOrderItem(int id)
         {
-            return View();
+            var result = await _orderServices.DeleteOrderItem(id);
+            if (result == true)
+                return RedirectToAction("Index");
+            return BadRequest();
+        }
+
+        public async Task<ActionResult> DeleteOrder(int id)
+        {
+            var result = await _orderServices.DeleteOrder(id);
+            if (result == true)
+                return RedirectToAction("Index");
+            return BadRequest();
         }
 
         // POST: OrdersController/Delete/5
