@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Orders.Services.OrderServices;
+using Orders.ViewModels.Order;
 using Orders.ViewModels.OrderItem;
 using Orders.ViewModels.Orders;
 using System.Collections.Generic;
@@ -17,30 +18,32 @@ namespace Orders.Controllers
         {
             _orderServices = orderServices;
         }
+        
         // GET: OrdersController
+
         public async Task<ActionResult> Index()
         {
-            return View(await _orderServices.GetOrdersTable());
+            OrdersFilterViewModel filter = new OrdersFilterViewModel() { ProviderName = "Ozon" };
+            return View(await _orderServices.GetOrdersTable(filter));
         }
 
-        // GET: OrdersController/Details/5
-        public ActionResult Details(int id)
+        // GET: OrdersController/OrderDetails/5
+        public async Task<ActionResult> OrderDetails(int id)
         {
-            return View();
+            var result = await _orderServices.GetOrder(id);
+            return View(result);
         }
-
+        // GET: OrdersController/OrderItemDetails/5
+        public async Task<ActionResult> OrderItemDetails(int id)
+        {
+            var result = await _orderServices.GetOrderTable(id);
+            return View(result);
+        }
         // GET: OrdersController/Create
         public async Task<ActionResult> CreateOrder()
         {
             var result = await _orderServices.GetProviders();
             ViewBag.Providers = new SelectList(result, "Id", "Name");
-            return View();
-        }
-
-        public async Task<ActionResult> CreateOrderItem(int? orderid)
-        {
-            var result = await _orderServices.GetOrders();
-            ViewBag.Orders = new SelectList(result, "Id", "Number");
             return View();
         }
 
@@ -64,6 +67,13 @@ namespace Orders.Controllers
             {
                 return View();
             }
+        }
+
+        public async Task<ActionResult> CreateOrderItem(int? orderid)
+        {
+            var result = await _orderServices.GetOrders();
+            ViewBag.Orders = new SelectList(result, "Id", "Number");
+            return View();
         }
 
         [HttpPost]

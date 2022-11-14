@@ -1,0 +1,20 @@
+﻿@model Orders.ViewModels.Orders.OrderTableViewModel;
+@{
+    ViewData["Title"] = "OrderItemDetails";
+}
+
+<div class="card text-white bg-dark mb-10">
+    <div class="card-header">
+        <h5 class="card-title">@Model.Name</h5>
+    </div>
+    <div class="card-body text-black-50 bg-white align-content-center">
+        <h4 class="card-title">Номер заказа: @Model.Number</h4>
+        <h4 class="card-title">Поставщик: @Model.ProviderName</h4>
+        <h3 class="card-text">@Model.Quantity @Model.Unit</h3>
+    </div>
+    <div class="card-footer bg-transparent border-dark">
+        <button class=" btn-outline-dark">Вернутся</button>
+        <button class="btn-outline-dark">Редактировать</button>
+    </div>
+</div>
+
