@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Orders.Services.OrderServices;
+using Orders.ViewModels.Order;
 using Orders.ViewModels.OrderItem;
 using Orders.ViewModels.Orders;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 
 namespace Orders.Controllers
@@ -17,19 +19,22 @@ namespace Orders.Controllers
         {
             _orderServices = orderServices;
         }
-        // GET: OrdersController
-        public async Task<ActionResult> Index()
-        {
-            return View(await _orderServices.GetOrdersTable());
+
+        public async Task<ActionResult> Index([Bind("DateNow,DatePast,Name,Unit,Number,ProviderName")] OrdersFilterViewModel filter)
+        {                                                               
+            return View(await _orderServices.GetOrdersTable(filter));
         }
 
-        // GET: OrdersController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> DetailsOrderItem(int id)
         {
-            return View();
+            return View(await _orderServices.GetOrderItem(id));
         }
 
-        // GET: OrdersController/Create
+        public async Task<ActionResult> DetailsOrder(int id)
+        {
+            return View(await _orderServices.GetOrder(id));
+        }
+
         public async Task<ActionResult> CreateOrder()
         {
             var result = await _orderServices.GetProviders();
@@ -40,11 +45,12 @@ namespace Orders.Controllers
         public async Task<ActionResult> CreateOrderItem(int? orderid)
         {
             var result = await _orderServices.GetOrders();
+            if (orderid != null)
+                result.Where(a => a.Id == orderid);
             ViewBag.Orders = new SelectList(result, "Id", "Number");
             return View();
         }
 
-        // POST: OrdersController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateOrder([Bind("Number,Date,ProviderId")] OrderViewModel order)
@@ -100,7 +106,7 @@ namespace Orders.Controllers
                 if (result == null)
                     return BadRequest();
 
-                return RedirectToAction("CreateOrderItem", new { orderid = result.Id });
+                return RedirectToAction("CreateOrderItem", new { orderid = result.OrderId });
             }
             catch
             {
@@ -108,16 +114,14 @@ namespace Orders.Controllers
             }
         }
 
-        // GET: OrdersController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult EditOrders(int id)
         {
             return View();
         }
 
-        // POST: OrdersController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult EditOrders(int id, IFormCollection collection)
         {
             try
             {
@@ -129,7 +133,25 @@ namespace Orders.Controllers
             }
         }
 
-        // GET: OrdersController/Delete/5
+        public ActionResult EditOrderItems(int id)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditOrderItems(int id, IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
         public async Task<ActionResult> DeleteOrderItem(int id)
         {
             var result = await _orderServices.DeleteOrderItem(id);
@@ -146,19 +168,5 @@ namespace Orders.Controllers
             return BadRequest();
         }
 
-        // POST: OrdersController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orders.Data;
 using Orders.Data.Models;
+using Orders.ViewModels.Order;
 using Orders.ViewModels.OrderItem;
 using Orders.ViewModels.Orders;
 using Orders.ViewModels.Provider;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -78,9 +80,15 @@ namespace Orders.Services.OrderServices
             return result;
         }
 
-        public async Task<IEnumerable<OrderTableViewModel>> GetOrdersTable()
+        public async Task<IEnumerable<OrderTableViewModel>> GetOrdersTable(OrdersFilterViewModel filter)
         {
             var result = from f in _context.OrderItems.Include(o => o.Order).ThenInclude(p => p.Provider).AsNoTracking()
+                         .Where(f => 
+                         (filter.Name == null ? true : f.Name == filter.Name) 
+                         & (filter.Number == null ? true : f.Order.Number == filter.Number)
+                         & (filter.ProviderName == null ? true : f.Order.Provider.Name == filter.ProviderName)
+                         & (filter.Unit == null ? true : f.Unit == filter.Unit)
+                         & (filter.DateNow == DateTime.MinValue & filter.DatePast == DateTime.MinValue ? true : f.Order.Date <= filter.DateNow & f.Order.Date >= filter.DatePast))
                          select new OrderTableViewModel 
                          { 
                              OrderItemId = f.Id,
