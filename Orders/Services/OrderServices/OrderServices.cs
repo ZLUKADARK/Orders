@@ -61,6 +61,7 @@ namespace Orders.Services.OrderServices
         {
             if (id == null)
                 return null;
+
             var result = await _context.Order.Include(p => p.Provider).Where(o => o.Id == id).FirstOrDefaultAsync();
                           
             return new OrderViewModel { Id = result.Id, Date = result.Date, Number = result.Number, ProviderId = result.ProviderId, ProviderName = result.Provider.Name }; 
@@ -127,8 +128,14 @@ namespace Orders.Services.OrderServices
             if (orders.Id != id)
                 return false;
 
-            var result = new Order() { Id = orders.Id, Date = orders.Date, ProviderId = orders.ProviderId, Number = orders.Number };
+            if (OrderItemsNumberExists(orders.Number))
+                return false;
 
+            var result = await _context.Order.FindAsync(id);
+            result.Date = orders.Date;
+            result.ProviderId = orders.ProviderId;
+            result.Number = orders.Number;
+                
             _context.Entry(result).State = EntityState.Modified;
 
             try
@@ -149,9 +156,14 @@ namespace Orders.Services.OrderServices
         {
             if (orderItem.Id != id)
                 return false;
+            
+            if (OrdernNameExists(orderItem.Name))
+                return false;
 
-            var result = new OrderItem() { Id = orderItem.Id, Name = orderItem.Name, Quantity = orderItem.Quantity, Unit = orderItem.Unit };
-
+            var result = await _context.OrderItems.FindAsync(id);
+            result.Name = orderItem.Name;
+            result.Quantity = orderItem.Quantity;
+            result.Unit = orderItem.Unit;
             _context.Entry(result).State = EntityState.Modified;
 
             try

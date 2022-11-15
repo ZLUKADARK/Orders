@@ -114,15 +114,18 @@ namespace Orders.Controllers
             }
         }
 
-        public ActionResult EditOrders(int id)
+        public async Task<ActionResult> EditOrders(int id)
         {
-            return View();
+            var result = await _orderServices.GetProviders();
+            ViewBag.Providers = new SelectList(result, "Id", "Name");
+            return View(await _orderServices.GetOrder(id));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditOrders(int id, IFormCollection collection)
+        public async Task<ActionResult> EditOrders(int id, [Bind("Id,Number,Date,ProviderId")] OrderUpdateViewModel order)
         {
+            var result = await _orderServices.UpdateOrder(id, order);
             try
             {
                 return RedirectToAction(nameof(Index));
@@ -133,15 +136,16 @@ namespace Orders.Controllers
             }
         }
 
-        public ActionResult EditOrderItems(int id)
+        public async Task<ActionResult> EditOrderItems(int id)
         {
-            return View();
+            return View(await _orderServices.GetOrderItem(id));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditOrderItems(int id, IFormCollection collection)
+        public async Task<ActionResult> EditOrderItems(int id, [Bind("Id,Name,Quantity,Unit")] OrderItemUpdateViewModel item)
         {
+            var result = await _orderServices.UpdateOrderItem(id, item);
             try
             {
                 return RedirectToAction(nameof(Index));

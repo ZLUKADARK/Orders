@@ -26,8 +26,8 @@
     </div>
     <div class="card-footer">
         <button onclick="location.href='@Url.Action("Index", "Orders")'" class="btn-outline-dark">Вернутся</button>
-        <button type="button" class="btn-outline-warning">Редактировать</button>
-        <button type="button" class="btn-outline-danger">Удалить</button>
+        <button onclick="location.href='@Url.Action("EditOrderItems", "Orders", new { id = Model.Id })'" class="btn-outline-warning">Редактировать</button>
+        <button onclick="location.href='@Url.Action("DeleteOrderItem", "Orders", new { id = Model.Id })'" class="btn-outline-danger">Удалить</button>
     </div>
 </div>
 
