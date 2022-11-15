@@ -2,6 +2,31 @@
 @{
     ViewData["Title"] = "DetailsOrder";
 }
-
-<h1>DetailsOrder</h1>
+<br />
+<div class="card border-dark mb-6">
+    <div class="card-header">
+        <div class="span4">
+            Номер: @Model.Number
+        </div>
+    </div>
+    <div class="card-body text-dark">
+        <table class="table table-hover">
+            <tbody>
+                <tr>
+                    <th scope="row">Поставщик</th>
+                    <td>@Model.ProviderName</td>
+                </tr>
+                <tr>
+                    <th scope="row">Дата</th>
+                    <td>@Model.Date</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <button onclick="location.href='@Url.Action("Index", "Orders")'" class="btn-outline-dark">Вернутся</button>
+        <button type="button" class="btn-outline-warning">Редактировать</button>
+        <button type="button" class="btn-outline-danger">Удалить</button>
+    </div>
+</div>
 

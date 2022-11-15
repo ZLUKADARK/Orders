@@ -52,8 +52,8 @@ namespace Orders.Services.OrderServices
 
         public async Task<IEnumerable<OrderViewModel>> GetOrders()
         {
-            var result = from f in await _context.Order.AsNoTracking().ToListAsync()
-                         select new OrderViewModel { Id = f.Id, Date = f.Date, Number = f.Number, ProviderId = f.ProviderId };
+            var result = from f in await _context.Order.Include(p => p.Provider).AsNoTracking().ToListAsync()
+                         select new OrderViewModel { Id = f.Id, Date = f.Date, Number = f.Number, ProviderId = f.ProviderId, ProviderName = f.Provider.Name };
             return result;
         }
 
@@ -61,16 +61,16 @@ namespace Orders.Services.OrderServices
         {
             if (id == null)
                 return null;
-            var result = await _context.Order.FindAsync(id);
+            var result = await _context.Order.Include(p => p.Provider).Where(o => o.Id == id).FirstOrDefaultAsync();
                           
-            return new OrderViewModel { Id = result.Id, Date = result.Date, Number = result.Number, ProviderId = result.ProviderId }; 
+            return new OrderViewModel { Id = result.Id, Date = result.Date, Number = result.Number, ProviderId = result.ProviderId, ProviderName = result.Provider.Name }; 
         }
 
         public async Task<OrderItemViewModel> GetOrderItem(int id)
         {
-            var result = await _context.OrderItems.FindAsync(id);
+            var result = await _context.OrderItems.Include(o => o.Order).Where(o => o.Id == id).FirstOrDefaultAsync();
 
-            return new OrderItemViewModel { Id = result.Id, Name = result.Name, OrderId = result.OrderId, Quantity = result.Quantity, Unit = result.Unit };
+            return new OrderItemViewModel { Id = result.Id, Name = result.Name, OrderId = result.OrderId, Quantity = result.Quantity, Unit = result.Unit, OrderNumber = result.Order.Number };
         }
 
         public async Task<IEnumerable<ProviderViewModel>> GetProviders()
