@@ -4,12 +4,24 @@
 }
 <h1>Заказы</h1>
 
-  @*          ViewBag.SelectProductsName = new SelectList(selectValues.Name, "Name");
-            ViewBag.SelectNumber = new SelectList(selectValues.Number, "Number");
-            ViewBag.SelectProviderName = new SelectList(selectValues.ProviderName, "ProviderName");
-            ViewBag.SelectProductunit = new SelectList(selectValues.Unit, "Unit");*@
+<form asp-action="index" method="get">
+    <div class="row">
+        <div class="col-3">
+            <select name="Name" asp-items="ViewBag.SelectProductsName"><option selected value=""></option></select>
+        </div>
+        <div class="col-3">
+            <select name="Number" asp-items="ViewBag.SelectNumber"><option selected value=""></option></select>
+        </div>
+        <div class="col-3">
+            <select name="ProviderName" asp-items="ViewBag.SelectProviderName"><option selected value=""></option></select>
+        </div>
+        <div class="col-3">
+            <select name="Unit" asp-items="ViewBag.SelectProductunit"><option selected value=""></option></select>
+        </div>
 
-
+    </div>
+    <input type="submit" value="применить"/>
+</form>
 <table class="table">
     <thead>
         <tr>

@@ -20,16 +20,17 @@ namespace Orders.Controllers
             _orderServices = orderServices;
         }
 
-        public async Task<ActionResult> Index(DateTime past, DateTime now, string name, string unit, string number, string providerName)
+        public async Task<ActionResult> Index(DateTime past, DateTime now, string[] name, string[] unit, string[] number, string[] providerName)
         {
             var filter = new OrdersFilterViewModel { DatePast = past, DateNow = now, Name = name, Number = number, Unit = unit, ProviderName = providerName };
             var selectValues = await _orderServices.GetDistinct();
             ViewBag.SelectProductsName = new SelectList(selectValues.Name, "Name");
             ViewBag.SelectNumber = new SelectList(selectValues.Number, "Number");
             ViewBag.SelectProviderName = new SelectList(selectValues.ProviderName, "ProviderName");
-            ViewBag.SelectProductunit = new SelectList(selectValues.Unit, "Unit");
+            ViewBag.SelectProductUnit = new SelectList(selectValues.Unit, "Unit");
+            var result = await _orderServices.GetOrdersTable(filter);
 
-            return View(await _orderServices.GetOrdersTable(filter));
+            return View(result);
         }
 
         public async Task<ActionResult> DetailsOrderItem(int id)
