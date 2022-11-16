@@ -12,6 +12,7 @@ namespace Orders.Services.OrderServices
         public Task<OrderViewModel> CreateOrder(OrderViewModel orders);
         public Task<OrderItemViewModel> CreateOrderItemToOrder(OrderItemViewModel orderItem);
         public Task<IEnumerable<OrderTableViewModel>> GetOrdersTable(OrdersFilterViewModel filter);
+        public Task<DistinctValuesForSelect> GetDistinct();
         public Task<OrderTableViewModel> GetOrderTable(int id);
         public Task<IEnumerable<OrderViewModel>> GetOrders();
         public Task<OrderViewModel> GetOrder(int? id);

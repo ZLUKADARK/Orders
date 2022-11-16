@@ -8,7 +8,7 @@ using Orders.ViewModels.Orders;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-
+using System;
 
 namespace Orders.Controllers
 {
@@ -20,8 +20,15 @@ namespace Orders.Controllers
             _orderServices = orderServices;
         }
 
-        public async Task<ActionResult> Index([Bind("DateNow,DatePast,Name,Unit,Number,ProviderName")] OrdersFilterViewModel filter)
-        {                                                               
+        public async Task<ActionResult> Index(DateTime past, DateTime now, string name, string unit, string number, string providerName)
+        {
+            var filter = new OrdersFilterViewModel { DatePast = past, DateNow = now, Name = name, Number = number, Unit = unit, ProviderName = providerName };
+            var selectValues = await _orderServices.GetDistinct();
+            ViewBag.SelectProductsName = new SelectList(selectValues.Name, "Name");
+            ViewBag.SelectNumber = new SelectList(selectValues.Number, "Number");
+            ViewBag.SelectProviderName = new SelectList(selectValues.ProviderName, "ProviderName");
+            ViewBag.SelectProductunit = new SelectList(selectValues.Unit, "Unit");
+
             return View(await _orderServices.GetOrdersTable(filter));
         }
 
@@ -39,15 +46,6 @@ namespace Orders.Controllers
         {
             var result = await _orderServices.GetProviders();
             ViewBag.Providers = new SelectList(result, "Id", "Name");
-            return View();
-        }
-
-        public async Task<ActionResult> CreateOrderItem(int? orderid)
-        {
-            var result = await _orderServices.GetOrders();
-            if (orderid != null)
-                result.Where(a => a.Id == orderid);
-            ViewBag.Orders = new SelectList(result, "Id", "Number");
             return View();
         }
 
@@ -70,6 +68,15 @@ namespace Orders.Controllers
             {
                 return View();
             }
+        }
+        
+        public async Task<ActionResult> CreateOrderItem(int? orderid)
+        {
+            var result = await _orderServices.GetOrders();
+            if (orderid != null)
+                result.Where(a => a.Id == orderid);
+            ViewBag.Orders = new SelectList(result, "Id", "Number");
+            return View();
         }
 
         [HttpPost]

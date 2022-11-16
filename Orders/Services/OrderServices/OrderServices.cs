@@ -62,14 +62,14 @@ namespace Orders.Services.OrderServices
             if (id == null)
                 return null;
 
-            var result = await _context.Order.Include(p => p.Provider).Where(o => o.Id == id).FirstOrDefaultAsync();
+            var result = await _context.Order.Include(p => p.Provider).Where(o => o.Id == id).AsNoTracking().FirstOrDefaultAsync();
                           
             return new OrderViewModel { Id = result.Id, Date = result.Date, Number = result.Number, ProviderId = result.ProviderId, ProviderName = result.Provider.Name }; 
         }
 
         public async Task<OrderItemViewModel> GetOrderItem(int id)
         {
-            var result = await _context.OrderItems.Include(o => o.Order).Where(o => o.Id == id).FirstOrDefaultAsync();
+            var result = await _context.OrderItems.Include(o => o.Order).Where(o => o.Id == id).AsNoTracking().FirstOrDefaultAsync();
 
             return new OrderItemViewModel { Id = result.Id, Name = result.Name, OrderId = result.OrderId, Quantity = result.Quantity, Unit = result.Unit, OrderNumber = result.Order.Number };
         }
@@ -77,7 +77,7 @@ namespace Orders.Services.OrderServices
         public async Task<IEnumerable<ProviderViewModel>> GetProviders()
         {
             var result = await _context.Provider
-                .Select(p => new ProviderViewModel { Id = p.Id, Name = p.Name }).ToListAsync();
+                .Select(p => new ProviderViewModel { Id = p.Id, Name = p.Name }).AsNoTracking().ToListAsync();
             return result;
         }
 
@@ -103,6 +103,16 @@ namespace Orders.Services.OrderServices
                              ProviderName = f.Order.Provider.Name 
                          };
             return await result.ToListAsync();
+        } 
+        
+        public async Task<DistinctValuesForSelect> GetDistinct()
+        {
+            var number = await _context.Order.Select(o => o.Number).Distinct().AsNoTracking().ToListAsync();
+            var name = await _context.Provider.Select(o => o.Name).Distinct().AsNoTracking().ToListAsync();
+            var itemName = await _context.OrderItems.Select(o => o.Name).Distinct().AsNoTracking().ToListAsync();
+            var itemUnit = await _context.OrderItems.Select(o => o.Unit).Distinct().AsNoTracking().ToListAsync();
+            DistinctValuesForSelect distinct = new DistinctValuesForSelect() { Number = number, Name = itemName, ProviderName = name, Unit = itemUnit };
+            return distinct;
         }
 
         public async Task<OrderTableViewModel> GetOrderTable(int id)

@@ -4,6 +4,12 @@
 }
 <h1>Заказы</h1>
 
+  @*          ViewBag.SelectProductsName = new SelectList(selectValues.Name, "Name");
+            ViewBag.SelectNumber = new SelectList(selectValues.Number, "Number");
+            ViewBag.SelectProviderName = new SelectList(selectValues.ProviderName, "ProviderName");
+            ViewBag.SelectProductunit = new SelectList(selectValues.Unit, "Unit");*@
+
+
 <table class="table">
     <thead>
         <tr>
@@ -31,29 +37,29 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                <a asp-action="DetailsOrder" asp-route-id="@item.OrderId">@Html.DisplayFor(modelItem => item.Number)</a> 
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProviderName)
-            </td>
-            <td>
-                <a asp-action="DetailsOrderItem" asp-route-id="@item.OrderItemId">@Html.DisplayFor(modelItem => item.Name)</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Unit)
-            </td>
-            <td>
-                <a asp-action="DeleteOrderItem" asp-route-id="@item.OrderItemId">Delete</a>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    <a asp-action="DetailsOrder" asp-route-id="@item.OrderId">@Html.DisplayFor(modelItem => item.Number)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProviderName)
+                </td>
+                <td>
+                    <a asp-action="DetailsOrderItem" asp-route-id="@item.OrderItemId">@Html.DisplayFor(modelItem => item.Name)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Unit)
+                </td>
+                <td>
+                    <a asp-action="DeleteOrderItem" asp-route-id="@item.OrderItemId">Delete</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
