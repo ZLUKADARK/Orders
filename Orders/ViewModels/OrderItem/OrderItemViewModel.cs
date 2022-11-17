@@ -5,18 +5,14 @@ namespace Orders.ViewModels.OrderItem
     public class OrderItemViewModel
     {
         public int Id { get; set; }
-        [Required]
-        [Display(Name = "Название")]
+        [Required(ErrorMessage = "Поле не должно быть пустым")]
         public string Name { get; set; }
-        [Required]
-        [Display(Name = "Количество")]
+        [Required(ErrorMessage = "Поле не должно быть пустым")]
         public decimal Quantity { get; set; }
-        [Required]
-        [Display(Name = "Единица измерения")]
+        [Required(ErrorMessage = "Поле не должно быть пустым")]
         public string Unit { get; set; }
         public string OrderNumber { get; set; }
-        [Required]
-        [Display(Name = "Номер заказа")]
+        [Required(ErrorMessage = "Поле не должно быть пустым")]
         public int OrderId { get; set; }
     }
 }
