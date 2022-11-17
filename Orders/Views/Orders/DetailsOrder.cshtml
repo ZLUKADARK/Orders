@@ -1,4 +1,4 @@
-﻿@model Orders.ViewModels.Orders.OrderViewModel
+﻿@model Orders.ViewModels.Order.OrderDetailWithItemsViewModel
 @{
     ViewData["Title"] = "DetailsOrder";
 }
@@ -20,6 +20,14 @@
                     <th scope="row">Дата</th>
                     <td>@Model.Date</td>
                 </tr>
+                @foreach (var item in Model.OrderItem)
+                {
+                    <tr>
+                        <th scope="row">@item.Name</th>
+                        <td>@item.Quantity / @item.Unit</td>
+                    </tr>
+                }
+
             </tbody>
         </table>
     </div>

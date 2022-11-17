@@ -40,7 +40,7 @@ namespace Orders.Controllers
 
         public async Task<ActionResult> DetailsOrder(int id)
         {
-            return View(await _orderServices.GetOrder(id));
+            return View(await _orderServices.GetOrderWithItems(id));
         }
 
         public async Task<ActionResult> CreateOrder()
@@ -54,12 +54,19 @@ namespace Orders.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateOrder([Bind("Number,Date,ProviderId")] OrderViewModel order)
         {
+            var providers = await _orderServices.GetProviders();
+            ViewBag.Providers = new SelectList(providers, "Id", "Name");
+            if (!ModelState.IsValid)
+                return View();
+
             try
             {
                 if (order == null)
                     return BadRequest();
                 
-                var result = await _orderServices.CreateOrder(order);
+
+                    var result = await _orderServices.CreateOrder(order);
+
                 if (result == null)
                     return BadRequest();
 
@@ -82,8 +89,12 @@ namespace Orders.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateOrderItem([Bind("Name,Quantity,Unit,OrderId")] OrderItemViewModel orderItem)
+        public async Task<ActionResult> CreateOrderItem([Bind("Name,Quantity,Unit,OrderId")] OrderItemViewModel orderItem, bool next)
         {
+            var orders = await _orderServices.GetOrders();
+            ViewBag.Orders = new SelectList(orders, "Id", "Number");
+            if (!ModelState.IsValid)
+                return View();
             try
             {
                 if (orderItem == null)
@@ -92,7 +103,8 @@ namespace Orders.Controllers
                 var result = await _orderServices.CreateOrderItemToOrder(orderItem); 
                 if (result == null)
                     return BadRequest();
-                
+                if (next)
+                    return RedirectToAction("CreateOrderItem", new { orderid = result.OrderId });
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -101,27 +113,6 @@ namespace Orders.Controllers
             }
         }
         
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateOrderItemAndAdd([Bind("Name,Quantity,Unit,OrderId")] OrderItemViewModel orderItem)
-        {
-            try
-            {
-                if (orderItem == null)
-                    return BadRequest();
-
-                var result = await _orderServices.CreateOrderItemToOrder(orderItem);
-                if (result == null)
-                    return BadRequest();
-
-                return RedirectToAction("CreateOrderItem", new { orderid = result.OrderId });
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
         public async Task<ActionResult> EditOrders(int id)
         {
             var result = await _orderServices.GetProviders();
@@ -133,15 +124,19 @@ namespace Orders.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditOrders(int id, [Bind("Id,Number,Date,ProviderId")] OrderUpdateViewModel order)
         {
-            var result = await _orderServices.UpdateOrder(id, order);
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                var result = await _orderServices.UpdateOrder(id, order);
+                try
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    return View();
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View();
         }
 
         public async Task<ActionResult> EditOrderItems(int id)
@@ -153,6 +148,8 @@ namespace Orders.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditOrderItems(int id, [Bind("Id,Name,Quantity,Unit")] OrderItemUpdateViewModel item)
         {
+            if (!ModelState.IsValid)
+                return View(item);
             var result = await _orderServices.UpdateOrderItem(id, item);
             try
             {

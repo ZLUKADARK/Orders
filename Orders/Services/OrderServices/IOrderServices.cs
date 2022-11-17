@@ -16,6 +16,7 @@ namespace Orders.Services.OrderServices
         public Task<OrderTableViewModel> GetOrderTable(int id);
         public Task<IEnumerable<OrderViewModel>> GetOrders();
         public Task<OrderViewModel> GetOrder(int? id);
+        public Task<OrderDetailWithItemsViewModel> GetOrderWithItems(int? id);
         public Task<OrderItemViewModel> GetOrderItem(int id);
         public Task<IEnumerable<ProviderViewModel>> GetProviders();
         public Task<bool> DeleteOrderItem(int id);

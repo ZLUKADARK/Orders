@@ -66,6 +66,24 @@ namespace Orders.Services.OrderServices
                           
             return new OrderViewModel { Id = result.Id, Date = result.Date, Number = result.Number, ProviderId = result.ProviderId, ProviderName = result.Provider.Name }; 
         }
+        
+        public async Task<OrderDetailWithItemsViewModel> GetOrderWithItems(int? id)
+        {
+            if (id == null)
+                return null;
+
+            var result = await _context.Order.Include(i => i.OrderItem).Include(p => p.Provider).Where(o => o.Id == id).AsNoTracking().FirstOrDefaultAsync();
+
+            return new OrderDetailWithItemsViewModel
+            {
+                Id = result.Id,
+                Date = result.Date,
+                Number = result.Number,
+                ProviderId = result.ProviderId,
+                ProviderName = result.Provider.Name,
+                OrderItem = result.OrderItem.Select(i => new OrderItemShorViewModel { Id = i.Id, Name = i.Name, Quantity = i.Quantity, Unit = i.Unit }).ToList()
+            };
+        }
 
         public async Task<OrderItemViewModel> GetOrderItem(int id)
         {
