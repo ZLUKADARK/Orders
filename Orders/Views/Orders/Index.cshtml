@@ -7,6 +7,16 @@
 <form asp-action="index" method="get">
     <div class="row">
         <div class="col-3">
+            <label class="control-label">От</label>
+            <input type="datetime-local"
+                   name="Past" value="@ViewBag.DatePast">
+        </div>
+        <div class="col-3">
+            <label class="control-label">До</label>
+            <input type="datetime-local"
+                   name="Now" value="@ViewBag.DateNow" >
+        </div>
+        <div class="col-3">
             <label class="control-label">Номер заказа</label>
             <select multiple name="Number" asp-items="ViewBag.SelectNumber" class="selectpicker"></select>
         </div>

@@ -28,6 +28,8 @@ namespace Orders.Controllers
             ViewBag.SelectNumber = new SelectList(selectValues.Number, "Number");
             ViewBag.SelectProviderName = new SelectList(selectValues.ProviderName, "ProviderName");
             ViewBag.SelectProductUnit = new SelectList(selectValues.Unit, "Unit");
+            ViewBag.DatePast = DateTime.Now.AddMonths(-1);
+            ViewBag.DateNow = DateTime.Now;
             var result = await _orderServices.GetOrdersTable(filter);
 
             return View(result);
