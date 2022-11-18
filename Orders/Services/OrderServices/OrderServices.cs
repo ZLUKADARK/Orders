@@ -165,18 +165,17 @@ namespace Orders.Services.OrderServices
             result.Number = orders.Number;
                 
             _context.Entry(result).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException)
             {
                 if (!OrderExists(id))
                     return false;
                 else
-                    throw;
+                    return false;
             }
         }
 
@@ -192,19 +191,19 @@ namespace Orders.Services.OrderServices
             result.Name = orderItem.Name;
             result.Quantity = orderItem.Quantity;
             result.Unit = orderItem.Unit;
-            _context.Entry(result).State = EntityState.Modified;
 
+            _context.Entry(result).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException)
             {
                 if (!OrderItemsExists(id))
                     return false;
                 else
-                    throw;
+                    return false;
             }
         }
 

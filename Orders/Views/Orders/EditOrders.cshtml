@@ -5,6 +5,12 @@
 
 <h1>@Model.Number</h1>
 <br />
+@{ if (ViewBag.ErrorMessage != null)
+    {
+        <h7 class="text-danger">@ViewBag.ErrorMessage</h7>
+    }
+}
+<br />
 <div class="row">
     <div class="col-md-8">
         <form asp-action="EditOrders" class="form-control border-dark">

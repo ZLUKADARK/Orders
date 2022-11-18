@@ -32,7 +32,7 @@ namespace Orders.Controllers
             ViewBag.DateNow = DateTime.Now;
             var result = await _orderServices.GetOrdersTable(filter);
 
-            return View(result);
+            return View(result.OrderBy(o => o.Number));
         }
 
         public async Task<ActionResult> DetailsOrderItem(int id)
@@ -58,20 +58,19 @@ namespace Orders.Controllers
         {
             var providers = await _orderServices.GetProviders();
             ViewBag.Providers = new SelectList(providers, "Id", "Name");
+            
             if (!ModelState.IsValid)
                 return View();
 
+            var result = await _orderServices.CreateOrder(order);
+            if (result == null)
+            {
+                ViewBag.ErrorMessage = "Номер заказа уже существует в базе данных. Либо он соотвествует названию заказа, который существует в базе данных"; 
+                return View();
+            }
+                
             try
             {
-                if (order == null)
-                    return BadRequest();
-                
-
-                    var result = await _orderServices.CreateOrder(order);
-
-                if (result == null)
-                    return BadRequest();
-
                 return RedirectToAction("CreateOrderItem", new { orderid = result.Id});
             }
             catch
@@ -95,16 +94,19 @@ namespace Orders.Controllers
         {
             var orders = await _orderServices.GetOrders();
             ViewBag.Orders = new SelectList(orders, "Id", "Number");
+            
             if (!ModelState.IsValid)
                 return View();
+
+            var result = await _orderServices.CreateOrderItemToOrder(orderItem);
+            if (result == null)
+            {
+                ViewBag.ErrorMessage = "Название заказа соотвествует номеру заказа, который существует в базе данных";
+                return View();
+            }
+
             try
             {
-                if (orderItem == null)
-                    return BadRequest();
-
-                var result = await _orderServices.CreateOrderItemToOrder(orderItem); 
-                if (result == null)
-                    return BadRequest();
                 if (next)
                     return RedirectToAction("CreateOrderItem", new { orderid = result.OrderId });
                 return RedirectToAction(nameof(Index));
@@ -126,19 +128,26 @@ namespace Orders.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditOrders(int id, [Bind("Id,Number,Date,ProviderId")] OrderUpdateViewModel order)
         {
-            if (ModelState.IsValid)
+             if (!ModelState.IsValid)
+                return View();
+
+            var result = await _orderServices.UpdateOrder(id, order);
+            if (result == false)
             {
-                var result = await _orderServices.UpdateOrder(id, order);
-                try
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                catch
-                {
-                    return View();
-                }
+                var providers = await _orderServices.GetProviders();
+                ViewBag.Providers = new SelectList(providers, "Id", "Name");
+                ViewBag.ErrorMessage = "Номер заказа уже существует в базе данных. Либо он соотвествует названию заказа, который существует в базе данных";
+                return View(await _orderServices.GetOrder(id));
             }
-            return View();
+
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }  
         }
 
         public async Task<ActionResult> EditOrderItems(int id)
@@ -152,7 +161,14 @@ namespace Orders.Controllers
         {
             if (!ModelState.IsValid)
                 return View(item);
+            
             var result = await _orderServices.UpdateOrderItem(id, item);
+            if (result == false)
+            {
+                ViewBag.ErrorMessage = "Название заказа соотвествует номеру заказа, который существует в базе данных";
+                return View(await _orderServices.GetOrderItem(id));
+            }
+
             try
             {
                 return RedirectToAction(nameof(Index));

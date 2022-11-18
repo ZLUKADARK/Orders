@@ -17,7 +17,7 @@
                    name="Now" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")">
         </div>
     </div>
-    <br/>
+    <br />
     <div class="form-group">
         <div class="row">
             <div class="col-3">
@@ -37,13 +37,19 @@
                 <select multiple name="Unit" asp-items="ViewBag.SelectProductunit" class="selectpicker"></select>
             </div>
         </div>
+    </div>
         <br />
         <div class="form-group">
-            <div class="col-1 align-self-lg-center">
-                <input type="submit" value="применить" class="btn btn-outline-success"/>
+            <div class="row">
+                <div class="col-1 align-self-lg-center">
+                    <input type="submit" value="Применить" class="btn btn-outline-success" />
+                </div>
+                <br/>
+                <div class="col-1 align-self-lg-center">
+                    <input type="button" value="Отменить" onclick="location.href='@Url.Action("Index", "Orders")'" class="btn btn-outline-dark" />
+                </div>
             </div>
         </div>
-    </div>
 </form>
 <br />
 <table class="table">
