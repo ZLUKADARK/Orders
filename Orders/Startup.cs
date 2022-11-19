@@ -26,7 +26,7 @@ namespace Orders
             services.AddControllersWithViews();
             services.AddTransient<IOrderServices, OrderServices>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>(); 
-            services.AddSingleton<IHttpContextAccessor, _HttpContextAccessor>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddDbContext<OrdersDBContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("OrdersDBContext")));
         }
