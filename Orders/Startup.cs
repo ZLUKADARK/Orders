@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +25,8 @@ namespace Orders
         {
             services.AddControllersWithViews();
             services.AddTransient<IOrderServices, OrderServices>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>(); 
+            services.AddSingleton<IHttpContextAccessor, _HttpContextAccessor>();
             services.AddDbContext<OrdersDBContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("OrdersDBContext")));
         }

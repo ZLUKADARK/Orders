@@ -103,10 +103,10 @@ namespace Orders.Services.OrderServices
         {
             var result = from f in _context.OrderItems.Include(o => o.Order).ThenInclude(p => p.Provider).AsNoTracking()
                          .Where(f => 
-                         (filter.Name.Length == 0 ? true : filter.Name[0] == null ? true : filter.Name.Contains(f.Name)) 
-                         & (filter.Number.Length == 0 ? true : filter.Number[0] == null ? true : filter.Number.Contains(f.Order.Number))
-                         & (filter.ProviderName.Length == 0 ? true : filter.ProviderName[0] == null ? true : filter.ProviderName.Contains(f.Order.Provider.Name))
-                         & (filter.Unit.Length == 0 ? true : filter.Unit[0] == null ? true : filter.Unit.Contains(f.Unit))
+                         (filter.Name == null ? true : filter.Name.Length == 0 ? true : filter.Name[0] == null ? true : filter.Name.Contains(f.Name)) 
+                         & (filter.Number == null ? true : filter.Number.Length == 0 ? true : filter.Number[0] == null ? true : filter.Number.Contains(f.Order.Number))
+                         & (filter.ProviderName == null ? true : filter.ProviderName.Length == 0 ? true : filter.ProviderName[0] == null ? true : filter.ProviderName.Contains(f.Order.Provider.Name))
+                         & (filter.Unit == null ? true : filter.Unit.Length == 0 ? true : filter.Unit[0] == null ? true : filter.Unit.Contains(f.Unit))
                          & (filter.DateNow == DateTime.MinValue & filter.DatePast == DateTime.MinValue ? true : f.Order.Date <= filter.DateNow & f.Order.Date >= filter.DatePast))
                          select new OrderTableViewModel 
                          { 
