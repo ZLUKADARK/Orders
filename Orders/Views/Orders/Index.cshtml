@@ -1,18 +1,16 @@
-﻿@model IEnumerable<Orders.ViewModels.Orders.OrderTableViewModel>
-@{
+﻿@{
     ViewData["Title"] = "Index";
 }
 <h1>Заказы </h1>
-
-<form asp-action="index" id="filters" method="get" class="border-dark">
+<form id="filters" class="border-dark">
     <div class="row" id="dateBlock">
         <div class="col-3">
             <label class="control-label">От</label>
-            <input class="form-control" id="datePast" type="datetime-local" name="Past" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-ddTHH:mm")">
+            <input class="form-control" id="datePast" type="datetime-local" name="DatePast" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-ddTHH:mm")">
         </div>
         <div class="col-3">
             <label class="control-label">До</label>
-            <input class="form-control" id="dateNow" type="datetime-local" name="Now" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")">
+            <input class="form-control" id="dateNow" type="datetime-local" name="DateNow" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")">
         </div>
     </div>
     <br />
@@ -40,7 +38,7 @@
     <div class="form-group">
         <div class="row">
             <div class="col-1">
-                <input type="submit" value="Применить" class="btn btn-outline-success" />
+                <input type="submit" id="btnsubmit" value="Применить" class="btn btn-outline-success" />
             </div>
             <br />
             <div class="col-1 ">
@@ -54,71 +52,33 @@
     </div>
 </form>
 <br />
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Номер
-            </th>
-            <th>
-                Дата
-            </th>
-            <th>
-                Поставщик
-            </th>
-            <th>
-                Название заказа
-            </th>
-            <th>
-                Количество
-            </th>
-            <th>
-                Единица измерения
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    <a asp-action="DetailsOrder" asp-route-id="@item.OrderId">@Html.DisplayFor(modelItem => item.Number)</a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Date)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProviderName)
-                </td>
-                <td>
-                    <a asp-action="DetailsOrderItem" asp-route-id="@item.OrderItemId">@Html.DisplayFor(modelItem => item.Name)</a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quantity)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Unit)
-                </td>
-                <td>
-                    <button onclick="location.href='@Url.Action("DeleteOrderItem", "Orders", new { id = item.OrderItemId })'" type="button" class="btn btn-outline-danger btn-sm" ->Удалить</button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-<script>
-    function hiddeDateFilters() {
-        if (document.getElementById("dateBlock").hidden != true) {
-            document.getElementById("dateBlock").hidden = true
-            document.getElementById("datePast").disabled = true
-            document.getElementById("dateNow").disabled = true
-        } else {
-            document.getElementById("dateBlock").hidden = false
-            document.getElementById("dateBlock").hidden = false
-            document.getElementById("datePast").disabled = false
-            document.getElementById("dateNow").disabled = false
-        }
-    }
 
-</script>
+@Html.Action("GetOrders")
+    <script>
+        $(document).ready(function () {
+            $("#btnsubmit").click(function (e) {
+                var valdata = $("#filters").serialize();
+                $.ajax({
+                    url: "/Orders/OrdersFilter",
+                    type: "POST",
+                    dataType: 'json',
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    data: valdata
+                });
+            });
+        });
+    </script>
+    <script>
+        function hiddeDateFilters() {
+            if (document.getElementById("dateBlock").hidden != true) {
+                document.getElementById("dateBlock").hidden = true
+                document.getElementById("datePast").disabled = true
+                document.getElementById("dateNow").disabled = true
+            } else {
+                document.getElementById("dateBlock").hidden = false
+                document.getElementById("dateBlock").hidden = false
+                document.getElementById("datePast").disabled = false
+                document.getElementById("dateNow").disabled = false
+            }
+        }
+    </script>

@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Orders.Services.OrderServices;
 using Orders.ViewModels.Order;
 using Orders.ViewModels.OrderItem;
 using Orders.ViewModels.Orders;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
@@ -20,9 +18,8 @@ namespace Orders.Controllers
             _orderServices = orderServices;
         }
 
-        public async Task<ActionResult> Index(DateTime past, DateTime now, string[] name, string[] unit, string[] number, string[] providerName)
+        public async Task<ActionResult> Index()
         {
-            var filter = new OrdersFilterViewModel { DatePast = past, DateNow = now, Name = name, Number = number, Unit = unit, ProviderName = providerName };
             var selectValues = await _orderServices.GetDistinct();
             ViewBag.SelectProductsName = new SelectList(selectValues.Name, "Name");
             ViewBag.SelectNumber = new SelectList(selectValues.Number, "Number");
@@ -30,9 +27,20 @@ namespace Orders.Controllers
             ViewBag.SelectProductUnit = new SelectList(selectValues.Unit, "Unit");
             ViewBag.DatePast = DateTime.Now.AddMonths(-1);
             ViewBag.DateNow = DateTime.Now;
-            var result = await _orderServices.GetOrdersTable(filter);
+            return View();
+        }
 
-            return View(result.OrderBy(o => o.Number));
+        [HttpPost]
+        public async Task<ActionResult> OrdersFilter(OrdersFilterViewModel filter)
+        {
+            return await GetOrders(filter);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetOrders(OrdersFilterViewModel filter)
+        {
+            var result = await _orderServices.GetOrdersTable(filter);
+            return PartialView(result.OrderBy(o => o.Number));
         }
 
         public async Task<ActionResult> DetailsOrderItem(int id)
